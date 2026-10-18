@@ -1,0 +1,9 @@
+- name: Check if k3s is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Show k3s installation status
+  ansible.builtin.debug:
+    msg: >-
+      k3s installed: {{ k3s_binary.stat.exists }}
