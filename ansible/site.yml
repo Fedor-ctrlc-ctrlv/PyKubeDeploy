@@ -1,0 +1,22 @@
+---
+- name: Test Ubuntu server connection
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Get server hostname
+      ansible.builtin.command: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Show server hostname
+      ansible.builtin.debug:
+        msg: "Connected to {{ hostname_result.stdout }}"
+
+    - name: Check operating system
+      ansible.builtin.debug:
+        msg: "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Check Python version
+      ansible.builtin.debug:
+        msg: "Python: {{ ansible_python_version }}"
