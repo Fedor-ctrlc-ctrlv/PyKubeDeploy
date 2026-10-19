@@ -1,0 +1,12 @@
+[Unit]
+Description=Configure DNS for PyKubeDeploy Ubuntu Server
+Wants=systemd-resolved.service
+After=systemd-resolved.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/pykubedeploy-dns.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

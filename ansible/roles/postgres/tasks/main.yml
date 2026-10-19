@@ -1,0 +1,37 @@
+---
+- name: Create PostgreSQL manifest on server
+  ansible.builtin.template:
+    src: postgres.yml.j2
+    dest: /tmp/pykubedeploy-postgres.yml
+    mode: "0600"
+  become: true
+  no_log: true
+
+- name: Apply PostgreSQL manifest
+  ansible.builtin.command:
+    cmd: k3s kubectl apply -f /tmp/pykubedeploy-postgres.yml
+  become: true
+  register: postgres_apply
+  changed_when: >
+    'created' in postgres_apply.stdout or
+    'configured' in postgres_apply.stdout
+  no_log: true
+
+- name: Wait for PostgreSQL to become ready
+  ansible.builtin.command:
+    cmd: >
+      k3s kubectl rollout status statefulset/postgres
+      -n database --timeout=240s
+  become: true
+  changed_when: false
+
+- name: Show PostgreSQL resources
+  ansible.builtin.command:
+    cmd: k3s kubectl get pods,pvc,svc -n database
+  become: true
+  register: postgres_resources
+  changed_when: false
+
+- name: Print PostgreSQL resources
+  ansible.builtin.debug:
+    var: postgres_resources.stdout_lines
